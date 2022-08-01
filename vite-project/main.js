@@ -6,6 +6,7 @@ const buttonPhone = $('#button-phone');
 const buttonGlassBreak = $('#button-glass-break');
 const buttonGunshot = $('#button-gunshot');
 const buttonStopAll = $('#button-stop-all');
+const buttonPlaySequence = $('#button-play-sequence');
 
 const buttons = [buttonPhone, buttonGunshot, buttonGlassBreak];
 
@@ -40,15 +41,25 @@ SoundManager.load();
 SoundManager.play('unregistered-sound');
 
 // Sound finished playing event.
-SoundManager.on('phone', 'ended', (phone) => {
+/* SoundManager.on('phone', 'ended', (phone) => {
   console.group('ended');
   console.log(JSON.stringify(phone));
   console.groupEnd();
-});
+}); */
 
 // Sound is playing event.
-SoundManager.on('phone', 'timeupdate', (phone) => {
+/* SoundManager.on('phone', 'timeupdate', (phone) => {
   console.group('timeupdate');
   console.log(JSON.stringify(phone));
   console.groupEnd();
+});
+ */
+buttonPlaySequence.addEventListener('click', async () => {
+  await SoundManager.playSequence([
+    'phone',
+    'phone',
+    'glass-break',
+    'gunshot',
+    'phone',
+  ]);
 });

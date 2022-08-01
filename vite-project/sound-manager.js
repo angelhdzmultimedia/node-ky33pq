@@ -12,6 +12,33 @@ class SoundManager {
     };
   }
 
+  static playMany(names) {
+    for (const name of names) {
+      this.play(name);
+    }
+  }
+
+  static async playSequence(names) {
+    async function _seq(index) {
+      if (index < names.length) {
+        index++;
+        const name = names[index];
+        this.once(name, 'ended', async () => {
+          console.log(`Sound ${index} finished. About to play next...`);
+          _seq.apply(this, [index]);
+        });
+        this.play(name);
+      }
+    }
+    _seq.apply(this, [-1]);
+  }
+
+  static stopMany(names) {
+    for (const name of names) {
+      this.stop(name);
+    }
+  }
+
   static isPlaying(name) {
     return this.sounds[name].isPlaying;
   }
@@ -71,6 +98,19 @@ class SoundManager {
       this.sounds[name].currentTime = this.sounds[name].audio.currentTime;
       fn(this.sounds[name]);
     });
+  }
+
+  static once(name, event, fn) {
+    if (!this.isRegistered(name)) return;
+    this.sounds[name].audio.addEventListener(event, callback.bind(this));
+    function callback() {
+      this.sounds[name].audio.removeEventListener(event, callback);
+      if (event === 'ended') {
+        this.sounds[name].isPlaying = false;
+      }
+      this.sounds[name].currentTime = this.sounds[name].audio.currentTime;
+      fn(this.sounds[name]);
+    }
   }
 
   static async _play(name) {
