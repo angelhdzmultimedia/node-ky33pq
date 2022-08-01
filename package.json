@@ -1,0 +1,7 @@
+{
+  "name": "node-starter",
+  "version": "0.0.0",
+  "scripts": {
+    "start": "cd vite-project && npm i && npm run dev"
+  }
+}
