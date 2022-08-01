@@ -36,5 +36,19 @@ SoundManager.register('my-snd', `asdasdasd`);
 //Loads all the registered sounds.
 SoundManager.load();
 
-// If SoundManager.isDebugging is true, trying to play an unregistered sound will display a warning.
-SoundManager.play('my-snd');
+// Trying to play an unregistered sound will display a warning (if SoundManager.isDebugging is set to true).
+SoundManager.play('unregistered-sound');
+
+// Sound finished playing event.
+SoundManager.on('phone', 'ended', (phone) => {
+  console.group('ended');
+  console.log(JSON.stringify(phone));
+  console.groupEnd();
+});
+
+// Sound is playing event.
+SoundManager.on('phone', 'timeupdate', (phone) => {
+  console.group('timeupdate');
+  console.log(JSON.stringify(phone));
+  console.groupEnd();
+});

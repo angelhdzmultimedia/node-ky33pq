@@ -7,7 +7,12 @@ class SoundManager {
       name,
       url,
       audio: null,
+      isPlaying: false,
     };
+  }
+
+  static isPlaying(name) {
+    return this.sounds[name].isPlaying;
   }
 
   static isRegistered(name) {
@@ -33,6 +38,7 @@ class SoundManager {
     if (!this.isRegistered(name)) return;
     this.sounds[name].audio.currentTime = 0;
     this.sounds[name].audio.pause();
+    this.sounds[name].isPlaying = false;
   }
 
   static stopAll() {
@@ -41,10 +47,17 @@ class SoundManager {
     }
   }
 
+  static on(name, event, fn) {
+    this.sounds[name].audio.addEventListener(event, () => {
+      fn(this.sounds[name]);
+    });
+  }
+
   static async play(name) {
     if (!this.isRegistered(name)) return;
     try {
       this.sounds[name].audio.currentTime = 0;
+      this.sounds[name].isPlaying = true;
       await this.sounds[name].audio.play();
     } catch (error) {
       if (this.isDebugging) {
