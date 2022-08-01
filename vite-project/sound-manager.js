@@ -19,18 +19,24 @@ class SoundManager {
   }
 
   static async playSequence(names) {
-    async function _seq(index) {
-      if (index < names.length) {
-        index++;
-        const name = names[index];
-        this.once(name, 'ended', async () => {
-          console.log(`Sound ${index} finished. About to play next...`);
-          _seq.apply(this, [index]);
-        });
-        this.play(name);
-      }
+    const _old = [...names];
+    async function _seq(n) {
+      const name = n.shift();
+      this.once(name, 'ended', async () => {
+        console.log(
+          `Sound ${
+            _old.length - n.length
+          } finished. About to play next...`.concat(
+            ' '.repeat(Math.random() * (1000 - 1) + 1)
+          )
+        );
+        if (n.length > 0) {
+          _seq.apply(this, [n]);
+        }
+      });
+      this.play(name);
     }
-    _seq.apply(this, [-1]);
+    _seq.apply(this, [names]);
   }
 
   static stopMany(names) {
@@ -102,15 +108,22 @@ class SoundManager {
 
   static once(name, event, fn) {
     if (!this.isRegistered(name)) return;
-    this.sounds[name].audio.addEventListener(event, callback.bind(this));
-    function callback() {
-      this.sounds[name].audio.removeEventListener(event, callback);
-      if (event === 'ended') {
-        this.sounds[name].isPlaying = false;
-      }
-      this.sounds[name].currentTime = this.sounds[name].audio.currentTime;
-      fn(this.sounds[name]);
+    this.sounds[name].audio.name = name;
+    this.sounds[name].audio.event = event;
+    this.sounds[name].audio.fn = fn;
+    this.sounds[name].audio.addEventListener(event, this._callback.bind(this));
+  }
+
+  static _callback(e) {
+    const fn = e.target.fn;
+    const event = e.target.event;
+    const name = e.target.name;
+    this.sounds[name].audio.removeEventListener(event, this._callback);
+    if (event === 'ended') {
+      this.sounds[name].isPlaying = false;
     }
+    this.sounds[name].currentTime = this.sounds[name].audio.currentTime;
+    fn(this.sounds[name]);
   }
 
   static async _play(name) {
