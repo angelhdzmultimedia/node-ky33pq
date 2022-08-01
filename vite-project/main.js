@@ -26,8 +26,10 @@ buttons.forEach((button) => {
   });
 });
 
+SoundManager.register('my-snd', `asdasdasd`);
+
 //Loads all the registered sounds.
 SoundManager.load();
 
 // If SoundManager.isDebugging is true, trying to play an unregistered sound will display a warning.
-SoundManager.play('unregistered-sound');
+SoundManager.play('my-snd');

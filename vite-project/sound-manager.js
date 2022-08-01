@@ -10,19 +10,27 @@ class SoundManager {
     };
   }
 
-  static print(message) {
+  static warn(message) {
     console.warn(`[SOUND MANAGER]: ${message}`);
   }
 
-  static play(name) {
+  static async play(name) {
     if (!this.sounds[name]) {
       if (this.isDebugging) {
-        this.print(`Sound ${name} not registered.`);
+        this.warn(`Sound ${name} not registered.`);
       }
       return;
     }
-    this.sounds[name].audio.currentTime = 0;
-    this.sounds[name].audio.play();
+    try {
+      this.sounds[name].audio.currentTime = 0;
+      await this.sounds[name].audio.play();
+    } catch (error) {
+      if (this.isDebugging) {
+        this.warn(
+          `Sound did not load. ${this.sounds[name].url} is not a valid URL.`
+        );
+      }
+    }
   }
 
   static load() {
