@@ -18,7 +18,7 @@ buttons.forEach((button) => {
   // Registers a sound.
   SoundManager.register(
     sound,
-    `https://github.com/angelhdzmultimedia/js-w5ft4j/blob/main/assets/sounds/${sound}-sound.wav?raw=true`
+    `https://github.com/angelhdzmultimedia/node-ky33pq/blob/main/assets/sounds/${sound}-sound.wav?raw=true`
   );
 
   button.addEventListener('click', (event) => {
