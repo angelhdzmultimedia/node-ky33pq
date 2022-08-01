@@ -54,11 +54,11 @@ class SoundManager {
     this.sounds[name].audio.pause();
   }
 
-  static resume(name) {
+  static async resume(name) {
     if (!this.isRegistered(name)) return;
     if (this.sounds[name].currentTime >= 0) {
       this.sounds[name].audio.currentTime = this.sounds[name].currentTime;
-      this._play(name);
+      await this._play(name);
     }
   }
 
@@ -73,8 +73,7 @@ class SoundManager {
     });
   }
 
-  static _play(name) {
-    if (!this.isRegistered(name)) return;
+  static async _play(name) {
     try {
       this.sounds[name].isPlaying = true;
       await this.sounds[name].audio.play();
@@ -88,8 +87,9 @@ class SoundManager {
   }
 
   static async play(name) {
+    if (!this.isRegistered(name)) return;
     this.sounds[name].audio.currentTime = 0;
-    this._play(name);
+    await this._play(name);
   }
 
   static load() {
