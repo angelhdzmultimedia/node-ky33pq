@@ -1,5 +1,3 @@
-
-
 const $ = (selector) => document.querySelector(selector);
 
 const divApp = $('#div-app');
@@ -18,7 +16,7 @@ buttons.forEach((button) => {
   // Registers a sound.
   SoundManager.register(
     sound,
-    `https://github.com/angelhdzmultimedia/node-ky33pq/blob/main/assets/sounds/${sound}-sound.wav?raw=true`
+    `https://github.com/angelhdzmultimedia/node-ky33pq/blob/main/vite-project/public/assets/sounds/${sound}-sound.wav?raw=true`
   );
 
   button.addEventListener('click', (event) => {
@@ -33,5 +31,3 @@ SoundManager.load();
 
 // If SoundManager.isDebugging is true, trying to play an unregistered sound will display a warning.
 SoundManager.play('unregistered-sound');
-
-
