@@ -5,6 +5,7 @@ const divApp = $('#div-app');
 const buttonPhone = $('#button-phone');
 const buttonGlassBreak = $('#button-glass-break');
 const buttonGunshot = $('#button-gunshot');
+const buttonStopAll = $('#button-stop-all');
 
 const buttons = [buttonPhone, buttonGunshot, buttonGlassBreak];
 
@@ -24,6 +25,10 @@ buttons.forEach((button) => {
     // Plays a sound.
     SoundManager.play(sound);
   });
+});
+
+buttonStopAll.addEventListener('click', () => {
+  SoundManager.stopAll();
 });
 
 SoundManager.register('my-snd', `asdasdasd`);

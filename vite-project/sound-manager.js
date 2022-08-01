@@ -10,17 +10,39 @@ class SoundManager {
     };
   }
 
-  static warn(message) {
-    console.warn(`[SOUND MANAGER]: ${message}`);
-  }
-
-  static async play(name) {
+  static isRegistered(name) {
     if (!this.sounds[name]) {
       if (this.isDebugging) {
         this.warn(`Sound ${name} not registered.`);
       }
-      return;
+      return false;
     }
+    return true;
+  }
+
+  static unregister(name) {
+    if (!this.isRegistered(name)) return;
+    delete this.sounds[name];
+  }
+
+  static warn(message) {
+    console.warn(`[SOUND MANAGER]: ${message}`);
+  }
+
+  static stop(name) {
+    if (!this.isRegistered(name)) return;
+    this.sounds[name].audio.currentTime = 0;
+    this.sounds[name].audio.pause();
+  }
+
+  static stopAll() {
+    for (const sound of Object.values(this.sounds)) {
+      this.stop(sound.name);
+    }
+  }
+
+  static async play(name) {
+    if (!this.isRegistered(name)) return;
     try {
       this.sounds[name].audio.currentTime = 0;
       await this.sounds[name].audio.play();
