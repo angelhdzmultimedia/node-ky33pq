@@ -8,6 +8,7 @@ class SoundManager {
       url,
       audio: null,
       isPlaying: false,
+      currentTime: null,
     };
   }
 
@@ -47,16 +48,34 @@ class SoundManager {
     }
   }
 
+  static pause(name) {
+    if (!this.isRegistered(name)) return;
+    this.sounds[name].currentTime = this.sounds[name].audio.currentTime;
+    this.sounds[name].audio.pause();
+  }
+
+  static resume(name) {
+    if (!this.isRegistered(name)) return;
+    if (this.sounds[name].currentTime >= 0) {
+      this.sounds[name].audio.currentTime = this.sounds[name].currentTime;
+      this._play(name);
+    }
+  }
+
   static on(name, event, fn) {
+    if (!this.isRegistered(name)) return;
     this.sounds[name].audio.addEventListener(event, () => {
+      if (event === 'ended') {
+        this.sounds[name].isPlaying = false;
+      }
+      this.sounds[name].currentTime = this.sounds[name].audio.currentTime;
       fn(this.sounds[name]);
     });
   }
 
-  static async play(name) {
+  static _play(name) {
     if (!this.isRegistered(name)) return;
     try {
-      this.sounds[name].audio.currentTime = 0;
       this.sounds[name].isPlaying = true;
       await this.sounds[name].audio.play();
     } catch (error) {
@@ -66,6 +85,11 @@ class SoundManager {
         );
       }
     }
+  }
+
+  static async play(name) {
+    this.sounds[name].audio.currentTime = 0;
+    this._play(name);
   }
 
   static load() {
