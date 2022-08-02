@@ -18,21 +18,28 @@ class SoundManager {
     }
   }
 
-  static async playSequence(names) {
-    async function _cb(e) {
-      //  e.target.removeEventListener('ended', _cb);
-      await _seq.apply(this);
-    }
+  static _sequence = [];
 
-    async function _seq() {
-      if (names.length > 0) {
-        const name = names.shift();
-        console.log(`Playing ${name}, remaining: ${names}`);
-        this.once(name, 'ended', _cb.bind(this));
-        await this.play(name);
-      }
+  static async _cb(e) {
+    e.target.removeEventListener('ended', this._cb);
+    this.next();
+  }
+
+  static async next() {
+    if (this._sequence.length > 0) {
+      const _name = this._sequence.shift();
+      console.log(`Playing ${_name}, remaining: ${this._sequence}`);
+      this.sounds[_name].audio.event = 'ended';
+      this.sounds[_name].audio.isActive = true;
+      this.sounds[_name].audio._cb = this._cb.bind(this);
+      this.sounds[_name].audio.addEventListener('ended', this._cb.bind(this));
+      this.play(_name);
     }
-    await _seq.apply(this, [names]);
+  }
+
+  static async playSequence(names) {
+    this._sequence = names;
+    this.next();
   }
 
   static stopMany(names) {
@@ -73,8 +80,14 @@ class SoundManager {
 
   static stopAll() {
     for (const sound of Object.values(this.sounds)) {
-      this.stop(sound.name);
+      if (sound.audio.isActive) {
+        console.log(`Removing: ${sound.audio.event}, ${sound.audio._cb}`);
+        sound.audio.removeEventListener(sound.audio.event, sound.audio._cb);
+        this.stop(sound.name);
+        sound.audio.isActive = false;
+      }
     }
+    this._sequence = [];
   }
 
   static pause(name) {
@@ -107,8 +120,9 @@ class SoundManager {
     this.sounds[name].audio.name = name;
     this.sounds[name].audio.event = event;
     this.sounds[name].audio.fn = fn.bind(this);
+    this.sounds[name].audio._cb = _cb;
     function _cb(e) {
-      e.target.removeEventListener(event, this._callback);
+      e.target.removeEventListener(event, e.target._cb);
       if (event === 'ended') {
         this.sounds[name].isPlaying = false;
       }
@@ -121,7 +135,7 @@ class SoundManager {
   static async _play(name) {
     try {
       this.sounds[name].isPlaying = true;
-      await this.sounds[name].audio.play();
+      this.sounds[name].audio.play();
     } catch (error) {
       if (this.isDebugging) {
         this.warn(
@@ -134,7 +148,7 @@ class SoundManager {
   static async play(name) {
     if (!this.isRegistered(name)) return;
     this.sounds[name].audio.currentTime = 0;
-    await this._play(name);
+    this._play(name);
   }
 
   static load() {

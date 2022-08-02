@@ -73,8 +73,8 @@ SoundManager.play('unregistered-sound');
   console.groupEnd();
 });
  */
-buttonPlaySequence.addEventListener('click', async () => {
-  await SoundManager.playSequence([
+buttonPlaySequence.addEventListener('click', () => {
+  SoundManager.playSequence([
     'sound_001',
     'sound_002',
     'sound_003',
