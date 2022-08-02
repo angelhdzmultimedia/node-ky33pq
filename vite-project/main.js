@@ -28,6 +28,25 @@ buttons.forEach((button) => {
   });
 });
 
+// Notes
+for (let i = 0; i < 6; i++) {
+  const button = $(`#button-note-${i + 1}`);
+  const sound = `sound_00${i + 1}`;
+  button.sound = sound;
+
+  // Registers a sound.
+  SoundManager.register(
+    sound,
+    `https://github.com/angelhdzmultimedia/dartpad_json/blob/master/${sound}.mp3?raw=true`
+  );
+
+  button.addEventListener('click', (event) => {
+    const sound = event.target.sound;
+    // Plays a sound.
+    SoundManager.play(sound);
+  });
+}
+
 buttonStopAll.addEventListener('click', () => {
   SoundManager.stopAll();
 });
@@ -41,7 +60,7 @@ SoundManager.load();
 SoundManager.play('unregistered-sound');
 
 // Sound finished playing event.
-/* SoundManager.on('phone', 'ended', (phone) => {
+/* SoundManager.once('glass-break', 'ended', (phone) => {
   console.group('ended');
   console.log(JSON.stringify(phone));
   console.groupEnd();
@@ -56,10 +75,10 @@ SoundManager.play('unregistered-sound');
  */
 buttonPlaySequence.addEventListener('click', async () => {
   await SoundManager.playSequence([
-    'phone',
-    'phone',
-    'glass-break',
-    'gunshot',
-    'phone',
+    'sound_001',
+    'sound_002',
+    'sound_003',
+    'sound_002',
+    'sound_001',
   ]);
 });

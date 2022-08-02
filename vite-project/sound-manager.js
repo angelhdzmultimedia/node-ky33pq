@@ -19,24 +19,20 @@ class SoundManager {
   }
 
   static async playSequence(names) {
-    const _old = [...names];
-    async function _seq(n) {
-      const name = n.shift();
-      this.once(name, 'ended', async () => {
-        console.log(
-          `Sound ${
-            _old.length - n.length
-          } finished. About to play next...`.concat(
-            ' '.repeat(Math.random() * (1000 - 1) + 1)
-          )
-        );
-        if (n.length > 0) {
-          _seq.apply(this, [n]);
-        }
-      });
-      this.play(name);
+    async function _cb(e) {
+      //  e.target.removeEventListener('ended', _cb);
+      await _seq.apply(this);
     }
-    _seq.apply(this, [names]);
+
+    async function _seq() {
+      if (names.length > 0) {
+        const name = names.shift();
+        console.log(`Playing ${name}, remaining: ${names}`);
+        this.once(name, 'ended', _cb.bind(this));
+        await this.play(name);
+      }
+    }
+    await _seq.apply(this, [names]);
   }
 
   static stopMany(names) {
@@ -110,20 +106,16 @@ class SoundManager {
     if (!this.isRegistered(name)) return;
     this.sounds[name].audio.name = name;
     this.sounds[name].audio.event = event;
-    this.sounds[name].audio.fn = fn;
-    this.sounds[name].audio.addEventListener(event, this._callback.bind(this));
-  }
-
-  static _callback(e) {
-    const fn = e.target.fn;
-    const event = e.target.event;
-    const name = e.target.name;
-    this.sounds[name].audio.removeEventListener(event, this._callback);
-    if (event === 'ended') {
-      this.sounds[name].isPlaying = false;
+    this.sounds[name].audio.fn = fn.bind(this);
+    function _cb(e) {
+      e.target.removeEventListener(event, this._callback);
+      if (event === 'ended') {
+        this.sounds[name].isPlaying = false;
+      }
+      this.sounds[name].currentTime = this.sounds[name].audio.currentTime;
+      fn(this.sounds[name]);
     }
-    this.sounds[name].currentTime = this.sounds[name].audio.currentTime;
-    fn(this.sounds[name]);
+    this.sounds[name].audio.addEventListener(event, _cb.bind(this));
   }
 
   static async _play(name) {
