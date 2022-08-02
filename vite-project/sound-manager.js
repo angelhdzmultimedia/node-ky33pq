@@ -21,7 +21,9 @@ class SoundManager {
   static _sequence = [];
 
   static async _cb(e) {
-    e.target.removeEventListener('ended', this._cb);
+    const _name = e.target.name;
+    const sound = this.sounds[_name];
+    sound.audio.removeEventListener('ended', sound.audio._cb);
     this.next();
   }
 
@@ -29,10 +31,14 @@ class SoundManager {
     if (this._sequence.length > 0) {
       const _name = this._sequence.shift();
       console.log(`Playing ${_name}, remaining: ${this._sequence}`);
+      this.sounds[_name].audio.name = _name;
       this.sounds[_name].audio.event = 'ended';
       this.sounds[_name].audio.isActive = true;
       this.sounds[_name].audio._cb = this._cb.bind(this);
-      this.sounds[_name].audio.addEventListener('ended', this._cb.bind(this));
+      this.sounds[_name].audio.addEventListener(
+        'ended',
+        this.sounds[_name].audio._cb
+      );
       this.play(_name);
     }
   }
