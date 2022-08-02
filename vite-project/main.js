@@ -82,7 +82,7 @@ buttonPlaySequence.addEventListener('click', () => {
     'sound_003',
     'sound_003',
     'sound_003',
-    'sound_001',
+    'sound_003',
     'sound_002',
     'sound_002',
     'sound_003',
