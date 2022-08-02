@@ -75,10 +75,19 @@ SoundManager.play('unregistered-sound');
  */
 buttonPlaySequence.addEventListener('click', () => {
   SoundManager.playSequence([
+    'sound_003',
+    'sound_002',
     'sound_001',
+    'sound_002',
+    'sound_003',
+    'sound_003',
+    'sound_003',
+    'sound_001',
+    'sound_002',
     'sound_002',
     'sound_003',
     'sound_002',
     'sound_001',
+    'glass-break',
   ]);
 });

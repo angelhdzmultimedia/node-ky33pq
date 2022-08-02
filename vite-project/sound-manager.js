@@ -30,7 +30,7 @@ class SoundManager {
   static async next() {
     if (this._sequence.length > 0) {
       const _name = this._sequence.shift();
-      console.log(`Playing ${_name}, remaining: ${this._sequence}`);
+      console.log(`Playing ${_name}, remaining: ${this._sequence}...`);
       this.sounds[_name].audio.name = _name;
       this.sounds[_name].audio.event = 'ended';
       this.sounds[_name].audio.isActive = true;
@@ -40,11 +40,17 @@ class SoundManager {
         this.sounds[_name].audio._cb
       );
       this.play(_name);
+    } else {
+      console.log('Sequence finished.');
+      console.groupEnd();
     }
   }
 
   static async playSequence(names) {
     this._sequence = names;
+    if (this.isDebugging) {
+      console.group('[SOUND MANAGER]: Playing sequence...');
+    }
     this.next();
   }
 
